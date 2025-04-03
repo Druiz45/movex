@@ -1,5 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
+import ParkingLotView from "@/components/parking-lot-view"
 
 export default function Registros({ auth, entrancesExits }) {
     return (
@@ -12,7 +13,10 @@ export default function Registros({ auth, entrancesExits }) {
             }
         >
             <Head title="Espacios" />
-
+            <main className="container mx-auto p-4">
+                <h1 className="text-2xl font-bold mb-6">Gestión de Parqueadero</h1>
+                <ParkingLotView />
+            </main>
         </AuthenticatedLayout>
     );
 }
