@@ -16,4 +16,9 @@ class TypeVehicle extends Model
     {
         return $this->hasMany(ParkingSpace::class, 'type_vehicle_id', 'id');
     }
+
+    public function entrancesExits()
+    {
+        return $this->hasMany(EntryExit::class, 'type_vehicle_id', 'id');
+    }
 }

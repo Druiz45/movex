@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\ParkingSpace;
 use App\Models\Rate;
+use App\Models\TypeVehicle;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -30,6 +31,7 @@ class EntryExitFactory extends Factory
 
         return [
             'parking_space_id' => $parkingSpace->id,
+            'type_vehicle_id' => TypeVehicle::inRandomOrder()->first(),
             'license_plate' => strtoupper($this->faker->bothify('???-###')), // Placa tipo "ABC-123"
             'driver' => $this->faker->name(),
             'entry' => $entry,

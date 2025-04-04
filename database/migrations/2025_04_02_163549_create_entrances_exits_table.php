@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('entrances_exits', function (Blueprint $table) {
             $table->id();
             $table->unsignedSmallInteger('parking_space_id');
+            $table->unsignedTinyInteger('type_vehicle_id');
             $table->string('license_plate', 10);
             $table->string('driver');
             $table->dateTime('entry');
@@ -22,6 +23,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('parking_space_id')->references('id')->on('parking_spaces');
+            $table->foreign('type_vehicle_id')->references('id')->on('type_vehicles');
         });
     }
 
