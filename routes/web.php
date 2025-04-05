@@ -26,6 +26,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Route::put('/registros/{id}', [EntryExitController::class, 'update'])->name('registros.update');
 
     Route::get('parking-spaces', [ParkingSpaceController::class, 'index'])->name('parking_spaces.index');
+
+    Route::get('entrances-exits/export-excel', [EntryExitController::class, 'exportExcel'])->name('entradas_salidas.xlsx');
 });
 
 Route::middleware('auth')->group(function () {

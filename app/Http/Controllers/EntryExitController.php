@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\EntryExitExport;
 use App\Models\EntryExit;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class EntryExitController extends Controller
 {
@@ -53,5 +55,10 @@ class EntryExitController extends Controller
                 'date_to' => $request->date_to,
             ],
         ]);
+    }
+
+    public function exportExcel()
+    {
+        return Excel::download(new EntryExitExport, 'entradas y salidas.xlsx');
     }
 }

@@ -1,6 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { useEffect } from 'react';
+import { FaFileExcel } from 'react-icons/fa';
 
 export default function Registros({ auth, entrancesExits, filters, countsByType }) {
     const { data, setData, get } = useForm({
@@ -32,42 +33,49 @@ export default function Registros({ auth, entrancesExits, filters, countsByType 
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                         <h2 className="text-lg font-semibold mb-4">Entradas y Salidas</h2>
 
-                        {/* Filtro de rango de fechas */}
-                        <form onSubmit={handleSubmit} className="mb-6 flex flex-col sm:flex-row gap-4 items-end">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Desde:
-                                </label>
-                                <input
-                                    type="date"
-                                    value={data.date_from}
-                                    onChange={(e) => setData('date_from', e.target.value)}
-                                    className="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                    required
-                                />
-                            </div>
+                        {/* Filtro + botón Exportar Excel al mismo nivel */}
+                        <div className="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 items-end">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Desde:</label>
+                                    <input
+                                        type="date"
+                                        value={data.date_from}
+                                        onChange={(e) => setData('date_from', e.target.value)}
+                                        className="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                        required
+                                    />
+                                </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Hasta:
-                                </label>
-                                <input
-                                    type="date"
-                                    value={data.date_to}
-                                    onChange={(e) => setData('date_to', e.target.value)}
-                                    className="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                    required
-                                />
-                            </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Hasta:</label>
+                                    <input
+                                        type="date"
+                                        value={data.date_to}
+                                        onChange={(e) => setData('date_to', e.target.value)}
+                                        className="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                        required
+                                    />
+                                </div>
 
-                            <button
-                                type="submit"
-                                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                >
+                                    Filtrar
+                                </button>
+                            </form>
+
+                            <a
+                                href={route('entradas_salidas.xlsx')}
+                                className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-sm font-medium rounded hover:bg-green-700 transition whitespace-nowrap"
                             >
-                                Filtrar
-                            </button>
-                        </form>
+                                <FaFileExcel className="text-xl" />
+                                Exportar Excel
+                            </a>
+                        </div>
 
+                        {/* Tabla de registros */}
                         {entrancesExits.data.length > 0 ? (
                             <div className="overflow-x-auto">
                                 <table className="min-w-full border border-gray-300 bg-white">
@@ -129,8 +137,10 @@ export default function Registros({ auth, entrancesExits, filters, countsByType 
                         ) : (
                             <p className="text-gray-500 text-center">No hay registros disponibles.</p>
                         )}
+
+                        {/* Resumen por tipo de vehículo */}
                         {countsByType && (
-                            <div className="mb-4 bg-gray-100 p-4 rounded shadow">
+                            <div className="mb-4 bg-gray-100 p-4 rounded shadow mt-6">
                                 <h3 className="text-md font-semibold mb-2">Resumen por tipo de vehículo</h3>
                                 <ul className="list-disc list-inside text-sm text-gray-700">
                                     {Object.entries(countsByType).map(([type, count]) => (
@@ -139,7 +149,6 @@ export default function Registros({ auth, entrancesExits, filters, countsByType 
                                 </ul>
                             </div>
                         )}
-
                     </div>
                 </div>
             </div>
