@@ -3,7 +3,8 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { useEffect } from 'react';
 import { FaFileExcel } from 'react-icons/fa';
 
-export default function Registros({ auth, entrancesExits, filters, countsByType }) {
+export default function Registros({ auth, entrancesExits, filters, countsByType, totalsByType, totalGeneral }) {
+
     const { data, setData, get } = useForm({
         date_from: filters?.date_from || '',
         date_to: filters?.date_to || '',
@@ -139,16 +140,20 @@ export default function Registros({ auth, entrancesExits, filters, countsByType 
                         )}
 
                         {/* Resumen por tipo de vehículo */}
-                        {countsByType && (
-                            <div className="mb-4 bg-gray-100 p-4 rounded shadow mt-6">
-                                <h3 className="text-md font-semibold mb-2">Resumen por tipo de vehículo</h3>
-                                <ul className="list-disc list-inside text-sm text-gray-700">
-                                    {Object.entries(countsByType).map(([type, count]) => (
-                                        <li key={type}>{type}: <strong>{count}</strong></li>
-                                    ))}
-                                </ul>
+                        <div className="mb-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                            {Object.keys(countsByType).map((type) => (
+                                <div key={type} className="p-4 bg-gray-100 rounded shadow text-sm">
+                                    <strong>{type}</strong><br />
+                                    Cantidad: {countsByType[type]}<br />
+                                    Total a pagar: ${totalsByType[type].toFixed(2)}
+                                </div>
+                            ))}
+                            <div className="p-4 bg-green-100 rounded shadow text-sm">
+                                <strong>Total general</strong><br />
+                                ${totalGeneral.toFixed(2)}
                             </div>
-                        )}
+                        </div>
+
                     </div>
                 </div>
             </div>

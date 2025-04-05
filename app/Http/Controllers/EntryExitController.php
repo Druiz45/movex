@@ -26,12 +26,20 @@ class EntryExitController extends Controller
             $query->whereDate('entry', '<=', $request->date_to);
         }
 
-        // Clonamos la query para poder contar sin afectar el paginado
-        $countsByType = (clone $query)
-            ->with('typeVehicle') // Aseguramos la relación
-            ->get()
-            ->groupBy(fn($entry) => $entry->typeVehicle->name)
+        // Clonar la query filtrada
+        $filteredEntries = (clone $query)->with('typeVehicle')->get();
+
+        // Contadores por tipo de vehículo
+        $countsByType = $filteredEntries->groupBy(fn($entry) => $entry->typeVehicle->name)
             ->map(fn($group) => $group->count());
+
+        // Totales por tipo de vehículo
+        $totalsByType = $filteredEntries->groupBy(fn($entry) => $entry->typeVehicle->name)
+            ->map(fn($group) => $group->sum('total_price'));
+
+        // Total general
+        $totalGeneral = $filteredEntries->sum('total_price');
+
 
         $entrancesExits = $query->orderByDesc('entry')->paginate(10)->through(function ($entry) {
             $entry->formatted_entry = Carbon::parse($entry->entry)->isoFormat('DD [de] MMMM [de] YYYY - hh:mm A');
@@ -50,6 +58,8 @@ class EntryExitController extends Controller
             ],
             'entrancesExits' => $entrancesExits,
             'countsByType' => $countsByType,
+            'totalsByType' => $totalsByType,
+            'totalGeneral' => $totalGeneral,
             'filters' => [
                 'date_from' => $request->date_from,
                 'date_to' => $request->date_to,
