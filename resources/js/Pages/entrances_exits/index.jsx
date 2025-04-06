@@ -33,7 +33,20 @@ export default function Registros({ auth, entrancesExits, filters, countsByType,
                 <div className="max-w-7x1 mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                         <h2 className="text-lg font-semibold mb-4">Entradas y Salidas</h2>
-
+                        {/* Resumen por tipo de vehículo */}
+                        <div className="mb-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                            {Object.keys(countsByType).map((type) => (
+                                <div key={type} className="p-4 bg-gray-100 rounded shadow text-sm">
+                                    <strong>{type}</strong><br />
+                                    Cantidad: {countsByType[type]}<br />
+                                    Total a pagar: ${totalsByType[type].toFixed(2)}
+                                </div>
+                            ))}
+                            <div className="p-4 bg-green-100 rounded shadow text-sm">
+                                <strong>Total general</strong><br />
+                                ${totalGeneral.toFixed(2)}
+                            </div>
+                        </div>
                         {/* Filtro + botón Exportar Excel al mismo nivel */}
                         <div className="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                             <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 items-end">
@@ -89,7 +102,7 @@ export default function Registros({ auth, entrancesExits, filters, countsByType,
                                             <th className="border px-4 py-2">Salida</th>
                                             <th className="border px-4 py-2">Precio por hora a la fecha</th>
                                             <th className="border px-4 py-2">Total a Pagar</th>
-                                            <th className="border px-4 py-2">Acción</th>
+                                            {/* <th className="border px-4 py-2">Acción</th> */}
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -106,7 +119,7 @@ export default function Registros({ auth, entrancesExits, filters, countsByType,
                                                 <td className="border px-4 py-2 bg-green-300">
                                                     {entry.departure ? `$${entry.total_price}` : "En cálculo"}
                                                 </td>
-                                                <td className="border px-4 py-2">
+                                                {/* <td className="border px-4 py-2">
                                                     {!entry.departure && (
                                                         <button
                                                             className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
@@ -115,7 +128,7 @@ export default function Registros({ auth, entrancesExits, filters, countsByType,
                                                             Registrar Salida
                                                         </button>
                                                     )}
-                                                </td>
+                                                </td> */}
                                             </tr>
                                         ))}
                                     </tbody>
@@ -138,21 +151,6 @@ export default function Registros({ auth, entrancesExits, filters, countsByType,
                         ) : (
                             <p className="text-gray-500 text-center">No hay registros disponibles.</p>
                         )}
-
-                        {/* Resumen por tipo de vehículo */}
-                        <div className="mb-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                            {Object.keys(countsByType).map((type) => (
-                                <div key={type} className="p-4 bg-gray-100 rounded shadow text-sm">
-                                    <strong>{type}</strong><br />
-                                    Cantidad: {countsByType[type]}<br />
-                                    Total a pagar: ${totalsByType[type].toFixed(2)}
-                                </div>
-                            ))}
-                            <div className="p-4 bg-green-100 rounded shadow text-sm">
-                                <strong>Total general</strong><br />
-                                ${totalGeneral.toFixed(2)}
-                            </div>
-                        </div>
 
                     </div>
                 </div>
