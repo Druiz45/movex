@@ -5,7 +5,7 @@ import { Car, Bike } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 // Using React.memo to prevent unnecessary re-renders
-const ParkingSpace = memo(function ParkingSpace({ id, status, vehicleType, section, onClick }) {
+const ParkingSpace = memo(function ParkingSpace({ id, status, vehicleType, section, licensePlate, onClick }) {
   return (
     <div
       className={cn(
@@ -26,6 +26,9 @@ const ParkingSpace = memo(function ParkingSpace({ id, status, vehicleType, secti
         )}
       </div>
       <div className="mt-1 text-xs font-medium">{status === "available" ? "Disponible" : "Ocupado"}</div>
+      {licensePlate && (
+        <div className="mt-1 text-xs font-bold bg-gray-200 px-2 py-0.5 rounded-full">{licensePlate}</div>
+      )}
     </div>
   )
 })

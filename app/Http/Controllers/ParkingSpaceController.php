@@ -11,13 +11,13 @@ class ParkingSpaceController extends Controller
 {
     public function index()
     {
-        $parkingSpaces = ParkingSpace::paginate(10); // Paginación de 10 elementos por página
+        $initialSpaces = ParkingSpace::paginate(10); // Paginación de 10 elementos por página
 
         return Inertia::render('parking_spaces/index', [
             'auth' => [
                 'user' => Auth::user()
             ],
-            'parkingSpaces' => $parkingSpaces,
+            'initialSpaces' => $initialSpaces,
         ]);
     }
 }
