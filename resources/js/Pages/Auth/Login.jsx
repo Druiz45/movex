@@ -1,10 +1,5 @@
-import Checkbox from '@/Components/Checkbox';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
-import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
+import { FaUser, FaLock } from 'react-icons/fa';
 
 export default function Login({ status, canResetPassword }) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -15,86 +10,93 @@ export default function Login({ status, canResetPassword }) {
 
     const submit = (e) => {
         e.preventDefault();
-
         post(route('login'), {
             onFinish: () => reset('password'),
         });
     };
 
     return (
-        <GuestLayout>
-            <Head title="Log in" />
+        <>
+            <Head title="Login" />
 
-            {status && (
-                <div className="mb-4 text-sm font-medium text-green-600">
-                    {status}
-                </div>
-            )}
+            <div className="min-h-screen flex items-center justify-center bg-gray-100">
+                <div className="flex w-full max-w-4xl rounded-[50px] overflow-hidden shadow-xl bg-white">
+                    {/* Izquierda - Formulario */}
+                    <div className="w-full md:w-1/2 bg-white px-10 py-12 flex flex-col justify-center items-center">
+                        <h1 className="text-4xl font-extrabold text-gray-800 mb-8">LOGIN</h1>
+                        <form onSubmit={submit} className="w-full max-w-sm space-y-6">
+                            {/* Email */}
+                            <div className="flex items-center border-b border-black py-2">
+                                <FaUser className="text-xl text-black mr-3" />
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={data.email}
+                                    onChange={(e) => setData('email', e.target.value)}
+                                    className="appearance-none bg-transparent border-none w-full text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-0 focus:border-transparent"
+                                    placeholder="Usuario"
+                                />
+                            </div>
+                            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
 
-            <form onSubmit={submit}>
-                <div>
-                    <InputLabel htmlFor="email" value="Email" />
+                            {/* Password */}
+                            <div className="flex items-center border-b border-black py-2">
+                                <FaLock className="text-xl text-black mr-3" />
+                                <input
+                                    type="password"
+                                    name="password"
+                                    value={data.password}
+                                    onChange={(e) => setData('password', e.target.value)}
+                                    className="appearance-none bg-transparent border-none w-full text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-0 focus:border-transparent"
+                                    placeholder="Contraseña"
+                                />
 
-                    <TextInput
-                        id="email"
-                        type="email"
-                        name="email"
-                        value={data.email}
-                        className="mt-1 block w-full"
-                        autoComplete="username"
-                        isFocused={true}
-                        onChange={(e) => setData('email', e.target.value)}
-                    />
+                            </div>
+                            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
 
-                    <InputError message={errors.email} className="mt-2" />
-                </div>
+                            {/* Forgot password */}
+                            {canResetPassword && (
+                                <Link
+                                    href={route('password.request')}
+                                    className="text-sm text-blue-500 hover:underline block text-right"
+                                >
+                                    Olvide contraseña
+                                </Link>
+                            )}
 
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
+                            {/* Botón de login */}
+                            <button
+                                type="submit"
+                                disabled={processing}
+                                className="w-full bg-[#314F50] hover:bg-[#263d3e] text-white font-bold py-2 rounded-md transition"
+                            >
+                                INICIAR
+                            </button>
 
-                    <TextInput
-                        id="password"
-                        type="password"
-                        name="password"
-                        value={data.password}
-                        className="mt-1 block w-full"
-                        autoComplete="current-password"
-                        onChange={(e) => setData('password', e.target.value)}
-                    />
+                            {/* Enlaces adicionales */}
+                            <div className="flex flex-col sm:flex-row justify-between items-center text-sm text-gray-600 pt-6 gap-2">
+                                <Link href="/" className="hover:underline hover:text-[#314F50] transition">
+                                    ⬅ Volver al inicio
+                                </Link>
 
-                    <InputError message={errors.password} className="mt-2" />
-                </div>
+                                <Link href={route('register')} className="hover:underline hover:text-[#314F50] transition">
+                                    ¿No tienes cuenta? Regístrate
+                                </Link>
+                            </div>
+                        </form>
 
-                <div className="mt-4 block">
-                    <label className="flex items-center">
-                        <Checkbox
-                            name="remember"
-                            checked={data.remember}
-                            onChange={(e) =>
-                                setData('remember', e.target.checked)
-                            }
+                    </div>
+
+                    {/* Derecha - Imagen */}
+                    <div className="hidden md:flex w-1/2 bg-[#314F50] items-center justify-center">
+                        <img
+                            src="/img/auto.jpg" // cambia esta ruta si lo necesitas
+                            alt="Login Car"
+                            className="object-cover max-h-[400px]"
                         />
-                        <span className="ms-2 text-sm text-gray-600">
-                            Remember me
-                        </span>
-                    </label>
+                    </div>
                 </div>
-
-                <div className="mt-4 flex items-center justify-end">
-                    {canResetPassword && (
-                        <Link
-                            href={route('password.request')}
-                            className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                        >
-                            Forgot your password?
-                        </Link>
-                    )}
-
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Log in
-                    </PrimaryButton>
-                </div>
-            </form>
-        </GuestLayout>
+            </div>
+        </>
     );
 }
