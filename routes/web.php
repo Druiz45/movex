@@ -22,10 +22,15 @@ Route::get('/dashboard', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('entrances-exits', [EntryExitController::class, 'index'])->name('entrances-exits.index');
+
+    Route::get('/parking-spaces', [ParkingSpaceController::class, 'index'])->name('parking_spaces.index');
+    Route::post('/parking-spaces/register', [ParkingSpaceController::class, 'register'])->name('parking_spaces.register');
+    Route::post('/parking-spaces/checkout', [ParkingSpaceController::class, 'checkout'])->name('parking_spaces.checkout');
+    Route::get('/parking-spaces/report', [ParkingSpaceController::class, 'report'])->name('parking_spaces.report');
     // Route::post('/registros', [EntryExitController::class, 'store'])->name('registros.store');
     // Route::put('/registros/{id}', [EntryExitController::class, 'update'])->name('registros.update');
 
-    Route::get('parking-spaces', [ParkingSpaceController::class, 'index'])->name('parking_spaces.index');
+    // Route::get('parking-spaces', [ParkingSpaceController::class, 'index'])->name('parking_spaces.index');
 });
 
 Route::middleware('auth')->group(function () {

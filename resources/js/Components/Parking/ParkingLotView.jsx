@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useCallback, useMemo } from "react"
-import { Inertia } from "@inertiajs/inertia"
 import { Search } from "lucide-react"
 import { Input } from "@/Components/ui/input"
 import { Button } from "@/Components/ui/button"
@@ -9,13 +8,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import ParkingSpace from "./ParkingSpace"
 import VehicleRegistrationModal from "./VehicleRegistrationModal"
 import VehicleDetailsModal from "./VehicleDetailsModal"
-// import { route } from "@inertiajs/react"
+import { useForm } from "@inertiajs/react"
 
-export default function ParkingLotView({ initialSpaces }) {
-  const [spaces, setSpaces] = useState(initialSpaces || [])
+export default function ParkingLotView({ initialSpaces = [], vehicleTypes = [] }) {
+  // console.log(vehicleTypes)
+  const { data, setData, post, processing, errors, reset } = useForm({
+    parking_space_id: "",
+    vehicleData: {},
+  });
+
+  const [spaces, setSpaces] = useState(initialSpaces)
   const [statusFilter, setStatusFilter] = useState("all")
   const [vehicleTypeFilter, setVehicleTypeFilter] = useState("all")
-  const [sectionFilter, setSectionFilter] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
 
   // Modal states
@@ -23,26 +27,37 @@ export default function ParkingLotView({ initialSpaces }) {
   const [detailsModalOpen, setDetailsModalOpen] = useState(false)
   const [selectedSpace, setSelectedSpace] = useState(null)
 
+  // Get sections from space numbers (e.g., 1-10 = A, 11-20 = B, etc.)
+  const getSection = (number) => {
+    if (number <= 10) return "A"
+    if (number <= 20) return "B"
+    return "C"
+  }
+
   // Memoize filtered spaces to prevent recalculation on every render
   const filteredSpaces = useMemo(() => {
     return spaces.filter((space) => {
-      return (
-        (statusFilter === "all" || space.status === statusFilter) &&
-        (vehicleTypeFilter === "all" || space.vehicleType === vehicleTypeFilter) &&
-        (sectionFilter === "all" || space.section === sectionFilter) &&
-        (searchQuery === "" ||
-          space.id.toString().includes(searchQuery) ||
-          (space.vehicle &&
-            space.vehicle.license_plate &&
-            space.vehicle.license_plate.toLowerCase().includes(searchQuery.toLowerCase())))
-      )
+      const vehicleTypeMatch = vehicleTypeFilter === "all" || space.type_vehicle_id?.toString() === vehicleTypeFilter
+
+      const statusMatch =
+        statusFilter === "all" ||
+        (statusFilter === "available" && space.status === 0) ||
+        (statusFilter === "occupied" && space.status === 1)
+
+      const searchMatch =
+        searchQuery === "" ||
+        space.number?.toString().includes(searchQuery) ||
+        (space.license_plate && space.license_plate.toLowerCase().includes(searchQuery.toLowerCase()))
+
+      return vehicleTypeMatch && statusMatch && searchMatch
     })
-  }, [spaces, statusFilter, vehicleTypeFilter, sectionFilter, searchQuery])
+  }, [spaces, statusFilter, vehicleTypeFilter, searchQuery])
 
   // Handle space click based on status
   const handleSpaceClick = useCallback((space) => {
     setSelectedSpace(space)
-    if (space.status === "available") {
+    if (space.status === 0) {
+      // 0 = available
       setRegistrationModalOpen(true)
     } else {
       setDetailsModalOpen(true)
@@ -50,42 +65,50 @@ export default function ParkingLotView({ initialSpaces }) {
   }, [])
 
   // Handle vehicle registration
-  const handleRegisterVehicle = useCallback((spaceId, vehicleData) => {
-    Inertia.post(
-      route("parking.register"),
-      {
-        space_id: spaceId,
-        ...vehicleData,
-      },
-      {
-        onSuccess: () => {
-          setRegistrationModalOpen(false)
-          // The page will refresh with new data from the server
+  const handleRegisterVehicle = useCallback(
+    (spaceId, vehicleData) => {
+      console.log(spaceId, vehicleData);
+      post(route("parking_spaces.register"), {
+        data: {
+          parking_space_id: spaceId,
+          vehicleData: { ...vehicleData },
         },
-      },
-    )
-  }, [])
+        onSuccess: () => {
+          setRegistrationModalOpen(false);
+        },
+      });
+    },
+    [],
+  )
 
   // Handle vehicle checkout
-  const handleCheckoutVehicle = useCallback((parkingId) => {
-    Inertia.post(
-      route("parking.checkout"),
-      {
-        parking_id: parkingId,
-      },
-      {
-        onSuccess: () => {
-          setDetailsModalOpen(false)
-          // The page will refresh with new data from the server
+  const handleCheckoutVehicle = useCallback(
+    (spaceId) => {
+      router.post(
+        route("parking-spaces.checkout"),
+        {
+          parking_space_id: spaceId,
         },
-      },
-    )
-  }, [])
+        {
+          onSuccess: () => {
+            setDetailsModalOpen(false)
+          },
+        },
+      )
+    },
+    [route],
+  )
 
   // Calculate available spaces count once
   const availableSpacesCount = useMemo(() => {
-    return filteredSpaces.filter((s) => s.status === "available").length
+    return filteredSpaces.filter((s) => s.status === 0).length
   }, [filteredSpaces])
+
+  // Get vehicle type name from ID
+  const getVehicleTypeName = (typeId) => {
+    const type = vehicleTypes.find((t) => t.id === typeId)
+    return type ? type.name : ""
+  }
 
   return (
     <div className="space-y-6">
@@ -118,20 +141,11 @@ export default function ParkingLotView({ initialSpaces }) {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todos</SelectItem>
-            <SelectItem value="car">Automóvil</SelectItem>
-            <SelectItem value="motorcycle">Motocicleta</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select value={sectionFilter} onValueChange={setSectionFilter}>
-          <SelectTrigger className="w-full md:w-[180px]">
-            <SelectValue placeholder="Sección" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todas</SelectItem>
-            <SelectItem value="A">Sección A</SelectItem>
-            <SelectItem value="B">Sección B</SelectItem>
-            <SelectItem value="C">Sección C</SelectItem>
+            {vehicleTypes.map((type) => (
+              <SelectItem key={type.id} value={type.id.toString()}>
+                {type.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
@@ -141,10 +155,12 @@ export default function ParkingLotView({ initialSpaces }) {
           <ParkingSpace
             key={space.id}
             id={space.id}
+            number={space.number}
             status={space.status}
-            vehicleType={space.vehicleType}
-            section={space.section}
-            licensePlate={space.vehicle?.license_plate}
+            vehicleType={getVehicleTypeName(space.type_vehicle_id)}
+            vehicleTypeId={space.type_vehicle_id}
+            section={getSection(space.number)}
+            licensePlate={space.license_plate}
             onClick={() => handleSpaceClick(space)}
           />
         ))}
@@ -168,30 +184,27 @@ export default function ParkingLotView({ initialSpaces }) {
         </div>
       </div>
 
-      <div className="flex justify-end">
-        <Button onClick={() => Inertia.get(route("parking.report"))}>Generar Reporte</Button>
-      </div>
-
       {/* Registration Modal */}
       {selectedSpace && (
         <VehicleRegistrationModal
           isOpen={registrationModalOpen}
           onClose={() => setRegistrationModalOpen(false)}
           onSubmit={(data) => handleRegisterVehicle(selectedSpace.id, data)}
-          spaceId={selectedSpace.id}
-          section={selectedSpace.section}
+          space={selectedSpace}
+          vehicleTypes={vehicleTypes}
+          section={getSection(selectedSpace.number)}
         />
       )}
 
       {/* Details Modal */}
-      {selectedSpace && selectedSpace.vehicle && (
+      {selectedSpace && selectedSpace.status === 1 && (
         <VehicleDetailsModal
           isOpen={detailsModalOpen}
           onClose={() => setDetailsModalOpen(false)}
-          onCheckout={() => handleCheckoutVehicle(selectedSpace.vehicle.id)}
-          vehicle={selectedSpace.vehicle}
-          spaceId={selectedSpace.id}
-          section={selectedSpace.section}
+          onCheckout={() => handleCheckoutVehicle(selectedSpace.id)}
+          space={selectedSpace}
+          section={getSection(selectedSpace.number)}
+          vehicleTypeName={getVehicleTypeName(selectedSpace.type_vehicle_id)}
         />
       )}
     </div>
