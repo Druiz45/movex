@@ -17,14 +17,17 @@ class ParkingSpaceFactory extends Factory
      */
     public function definition(): array
     {
+        static $contador = 1; // Empieza en 1 y se incrementa con cada llamada
+
         $status = $this->faker->boolean(); // true (ocupado) o false (libre)
 
         return [
             'status' => $status,
             'type_vehicle_id' => $status ? TypeVehicle::inRandomOrder()->first()?->id : null,
-            'number' => $this->faker->unique()->bothify('P-###'), // Genera un número de espacio tipo "P-123"
-            'license_plate' => $status ? strtoupper($this->faker->bothify('???-###')) : null, // Genera una placa tipo "ABC-123"
+            'number' => $contador++, // número secuencial para el espacio
+            'license_plate' => $status ? strtoupper($this->faker->bothify('???-###')) : null,
             'driver' => $status ? $this->faker->name() : null,
+            'entry' => now()
         ];
     }
 }

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('number', 10);
             $table->string('license_plate', 10)->nullable();
             $table->string('driver')->nullable();
+            $table->dateTime('entry')->nullable();
             $table->boolean('status')->default(false);
             $table->timestamps();
 

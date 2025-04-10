@@ -1,67 +1,60 @@
-"use client"
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/Components/ui/dialog"
+import { Label } from "@/Components/ui/label"
+import { Input } from "@/Components/ui/input"
 import { Button } from "@/Components/ui/button"
-import { formatDateTime, calculateDuration } from "@/lib/utils"
 
-export default function VehicleDetailsModal({ isOpen, onClose, onCheckout, space, section, vehicleTypeName }) {
-  // Calculate duration and price
-  const entryTime = new Date(space.created_at)
-  const currentTime = new Date()
-  const durationHours = (currentTime - entryTime) / (1000 * 60 * 60)
-
-  // Calculate price (example: $2000 per hour for cars, $1000 for motorcycles)
-  const hourlyRate = vehicleTypeName?.toLowerCase().includes("auto") ? 2000 : 1000
-  const accumulatedPrice = Math.ceil(hourlyRate * durationHours)
+export default function VehicleDetailsModal({
+  isOpen,
+  onClose,
+  onCheckout,
+  space,
+  section,
+  vehicleTypeName,
+  processing,
+}) {
+  const getTimeElapsed = () => {
+    if (!space.entry) return "N/A"
+    const entryTime = new Date(space.entry)
+    const now = new Date()
+    const diffMs = now - entryTime
+    const hours = Math.floor(diffMs / (1000 * 60 * 60))
+    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))
+    return `${hours}h ${minutes}m`
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>
-            Detalles del Vehículo - Espacio {space.number} (Sección {section})
-          </DialogTitle>
+          <DialogTitle>Detalles del Vehículo</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-3 gap-4">
-            <div className="font-semibold text-right">Placa:</div>
-            <div className="col-span-2">{space.license_plate}</div>
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="font-semibold text-right">Conductor:</div>
-            <div className="col-span-2">{space.driver}</div>
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="font-semibold text-right">Tipo:</div>
-            <div className="col-span-2">{vehicleTypeName}</div>
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="font-semibold text-right">Entrada:</div>
-            <div className="col-span-2">{formatDateTime(space.created_at)}</div>
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="font-semibold text-right">Salida:</div>
-            <div className="col-span-2">Por definir</div>
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="font-semibold text-right">Duración:</div>
-            <div className="col-span-2">{calculateDuration(space.created_at, new Date())}</div>
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="font-semibold text-right">Precio Acumulado:</div>
-            <div className="col-span-2 font-bold text-lg">${accumulatedPrice.toLocaleString("es-CO")}</div>
+          <div><Label>Número de Espacio</Label><Input value={space.number} readOnly /></div>
+          <div><Label>Sección</Label><Input value={section} readOnly /></div>
+          <div><Label>Tipo de Vehículo</Label><Input value={vehicleTypeName} readOnly /></div>
+          <div><Label>Placa</Label><Input value={space.license_plate || "N/A"} readOnly /></div>
+          <div><Label>Conductor</Label><Input value={space.driver || "N/A"} readOnly /></div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div><Label>Fecha Entrada</Label><Input value={space.entry ? new Date(space.entry).toLocaleString() : "N/A"} readOnly /></div>
+            <div><Label>Tiempo Transcurrido</Label><Input value={getTimeElapsed()} readOnly /></div>
           </div>
         </div>
+
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onClose}>
             Cerrar
           </Button>
-          <Button type="button" variant="destructive" onClick={onCheckout}>
-            Finalizar Estacionamiento
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={onCheckout}
+            disabled={processing}
+          >
+            {processing ? "Procesando..." : "Registrar Salida"}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   )
 }
-

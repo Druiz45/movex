@@ -26,7 +26,7 @@ class EntryExitController extends Controller
 
         // Clonamos la query para poder contar sin afectar el paginado
         $countsByType = (clone $query)
-            ->with('typeVehicle') // Aseguramos la relación
+            ->with('typeVehicle')
             ->get()
             ->groupBy(fn($entry) => $entry->typeVehicle->name)
             ->map(fn($group) => $group->count());
@@ -37,8 +37,23 @@ class EntryExitController extends Controller
                 ? Carbon::parse($entry->departure)->isoFormat('DD [de] MMMM [de] YYYY - hh:mm A')
                 : null;
 
-            $entry->total_price = number_format($entry->total_price, 2);
             $entry->type = $entry->typeVehicle->name;
+
+            // 💰 Cálculo del precio total si ya salió
+            if ($entry->departure) {
+
+                $minutos = Carbon::parse($entry->entry)->diffInMinutes(Carbon::parse($entry->departure));
+
+                $horasCobradas = max(1, ceil($minutos / 60)); // Mínimo 1 hora
+
+                $total = $horasCobradas * $entry->hourly_price_to_date;
+                // dd($total);
+                $entry->calculated_price = $total;
+                // dd($entry->calculated_price);
+            } else {
+                $entry->total_price = null;
+            }
+
             return $entry;
         });
 

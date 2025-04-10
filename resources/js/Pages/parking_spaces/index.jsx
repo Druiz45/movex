@@ -15,6 +15,7 @@ export default function Index({ auth, parkingSpaces = [], typeVehicles = [] }) {
             Entradas y Salidas
           </h2>
         }
+        name
       >
         <Head title="Gestión de Parqueadero" />
         <main className="container mx-auto p-4">

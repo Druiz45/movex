@@ -6,6 +6,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -17,7 +19,9 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    return Inertia::render('Dashboard', [
+        'name' => Crypt::decrypt(Auth::user()->name),
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
