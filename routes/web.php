@@ -3,9 +3,13 @@
 use App\Http\Controllers\EntryExitController;
 use App\Http\Controllers\ParkingSpaceController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RateController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -17,17 +21,28 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    return Inertia::render('Dashboard', [
+        'name' => Crypt::decrypt(Auth::user()->name),
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('entrances-exits', [EntryExitController::class, 'index'])->name('entrances-exits.index');
+
+    Route::get('/parking-spaces', [ParkingSpaceController::class, 'index'])->name('parking_spaces.index');
+    Route::post('/parking-spaces/register', [ParkingSpaceController::class, 'register'])->name('parking_spaces.register');
+    Route::post('/parking-spaces/checkout', [ParkingSpaceController::class, 'checkout'])->name('parking_spaces.checkout');
+    // Route::get('/parking-spaces/report', [ParkingSpaceController::class, 'report'])->name('parking_spaces.report');
     // Route::post('/registros', [EntryExitController::class, 'store'])->name('registros.store');
     // Route::put('/registros/{id}', [EntryExitController::class, 'update'])->name('registros.update');
 
     Route::get('parking-spaces', [ParkingSpaceController::class, 'index'])->name('parking_spaces.index');
 
     Route::get('entrances-exits/export-excel', [EntryExitController::class, 'exportExcel'])->name('entradas_salidas.xlsx');
+
+    Route::get('users', [UserController::class, 'index'])->name('users.index');
+    Route::put('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
+    Route::post('/update-rate', [RateController::class, 'updateRate'])->name('parking_spaces.update-rate');
 });
 
 Route::middleware('auth')->group(function () {

@@ -9,7 +9,7 @@ class ParkingSpace extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['type_vehicle_id', 'number', 'license_plate', 'driver', 'status'];
+    protected $fillable = ['type_vehicle_id', 'license_plate', 'driver', 'entry', 'status'];
 
     // Relación: Un espacio de estacionamiento pertenece a un tipo de vehículo
     public function typeVehicle()

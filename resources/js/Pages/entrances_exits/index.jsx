@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { useEffect } from 'react';
 import { FaFileExcel } from 'react-icons/fa';
 
@@ -117,7 +117,7 @@ export default function Registros({ auth, entrancesExits, filters, countsByType,
                                                 </td>
                                                 <td className="border px-4 py-2">${entry.hourly_price_to_date}</td>
                                                 <td className="border px-4 py-2 bg-green-300">
-                                                    {entry.departure ? `$${entry.total_price}` : "En cálculo"}
+                                                    {entry.departure ? `$${entry.calculated_price}` : "En cálculo"}
                                                 </td>
                                                 {/* <td className="border px-4 py-2">
                                                     {!entry.departure && (

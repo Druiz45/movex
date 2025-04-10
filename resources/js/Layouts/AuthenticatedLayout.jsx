@@ -7,15 +7,14 @@ import { ArrowLeftIcon, ArrowRightIcon, Bars3Icon, XMarkIcon } from '@heroicons/
 import {
     HomeIcon,
     ArrowPathIcon,
-    Squares2X2Icon
+    Squares2X2Icon,
+    UserIcon
 } from '@heroicons/react/24/outline'
 
 export default function AuthenticatedLayout({ header, children }) {
-    const user = usePage().props.auth.user;
-    const [openDropdown, setOpenDropdown] = useState(false);
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [sidebarMobileOpen, setSidebarMobileOpen] = useState(false);
-
+    const name = usePage().props.name;
     const toggleSidebar = () => {
         setSidebarCollapsed(!sidebarCollapsed);
     };
@@ -45,17 +44,22 @@ export default function AuthenticatedLayout({ header, children }) {
                 <nav className="flex-1 px-2 py-6 space-y-4">
                     <NavLink href={route('dashboard')} active={route().current('dashboard')} collapsed={sidebarCollapsed}>
                         <HomeIcon className="h-5 w-5" />
-                        <span className="ml-2">Dashboard</span>
+                        <span className="ml-2">Inicio</span>
                     </NavLink>
 
                     <NavLink href={route('entrances-exits.index')} active={route().current('entrances-exits.index')} collapsed={sidebarCollapsed}>
                         <ArrowPathIcon className="h-5 w-5" />
-                        <span className="ml-2">Entrances and Exits</span>
+                        <span className="ml-2">Entredas y salidas</span>
                     </NavLink>
 
                     <NavLink href={route('parking_spaces.index')} active={route().current('parking_spaces.index')} collapsed={sidebarCollapsed}>
                         <Squares2X2Icon className="h-5 w-5" />
-                        <span className="ml-2">Parking Spaces</span>
+                        <span className="ml-2">Espacios de parqueadero</span>
+                    </NavLink>
+
+                    <NavLink href={route('users.index')} active={route().current('users.index')} collapsed={sidebarCollapsed}>
+                        <UserIcon className="h-5 w-5" />
+                        <span className="ml-2">Usuarios</span>
                     </NavLink>
                 </nav>
             </aside>
@@ -86,19 +90,24 @@ export default function AuthenticatedLayout({ header, children }) {
                 </div>
 
                 <nav className="flex-1 px-4 py-6 space-y-4">
-                    <NavLink href={route('dashboard')} active={route().current('dashboard')}>
+                    <NavLink href={route('dashboard')} active={route().current('dashboard')} collapsed={sidebarCollapsed}>
                         <HomeIcon className="h-5 w-5" />
-                        <span className="ml-2">Dashboard</span>
+                        <span className="ml-2">Inicio</span>
                     </NavLink>
 
-                    <NavLink href={route('entrances-exits.index')} active={route().current('entrances-exits.index')}>
+                    <NavLink href={route('entrances-exits.index')} active={route().current('entrances-exits.index')} collapsed={sidebarCollapsed}>
                         <ArrowPathIcon className="h-5 w-5" />
-                        <span className="ml-2">Entrances and Exits</span>
+                        <span className="ml-2">Entredas y salidas</span>
                     </NavLink>
 
-                    <NavLink href={route('parking_spaces.index')} active={route().current('parking_spaces.index')}>
+                    <NavLink href={route('parking_spaces.index')} active={route().current('parking_spaces.index')} collapsed={sidebarCollapsed}>
                         <Squares2X2Icon className="h-5 w-5" />
-                        <span className="ml-2">Parking Spaces</span>
+                        <span className="ml-2">Espacios de parqueadero</span>
+                    </NavLink>
+
+                    <NavLink href={route('users.index')} active={route().current('users.index')} collapsed={sidebarCollapsed}>
+                        <UserIcon className="h-5 w-5" />
+                        <span className="ml-2">Usuarios</span>
                     </NavLink>
                 </nav>
             </aside>
@@ -124,7 +133,7 @@ export default function AuthenticatedLayout({ header, children }) {
                             <Dropdown>
                                 <Dropdown.Trigger>
                                     <button className="flex items-center text-sm focus:outline-none text-gray-700 hover:text-gray-900">
-                                        <span className="mr-2">{user.name}</span>
+                                        <span className="mr-2">{name}</span>
                                         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                                         </svg>
@@ -132,9 +141,9 @@ export default function AuthenticatedLayout({ header, children }) {
                                 </Dropdown.Trigger>
 
                                 <Dropdown.Content align="right" width="48">
-                                    <Dropdown.Link href={route('profile.edit')}>Profile</Dropdown.Link>
+                                    <Dropdown.Link href={route('profile.edit')}>Perfil</Dropdown.Link>
                                     <Dropdown.Link href={route('logout')} method="post" as="button">
-                                        Log Out
+                                        Cerrar Sesion
                                     </Dropdown.Link>
                                 </Dropdown.Content>
                             </Dropdown>

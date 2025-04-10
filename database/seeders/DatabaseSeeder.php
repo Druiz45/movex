@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
             TypeVehicleSeeder::class,
         ]);
 
-        ParkingSpace::factory()->count(21)->create();
-        EntryExit::factory()->count(21)->create();
+        ParkingSpace::factory()->count(100)->create();
+        EntryExit::factory()->count(20)->create();
     }
 }

@@ -6,5 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Rate extends Model
 {
-    //
+    protected $fillable = [
+        'price_hour',
+    ];
 }
