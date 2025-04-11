@@ -26,7 +26,7 @@
 }
 
 .auth-image-container {
-    background-color: #2c4a46;
+    background-color: #314F50;
     padding: 3rem;
     width: 50%;
     display: flex;
@@ -199,12 +199,12 @@
     .auth-container {
         flex-direction: column;
     }
-    
+
     .auth-form-container,
     .auth-image-container {
         width: 100%;
     }
-    
+
     .auth-image-container {
         padding: 2rem;
     }

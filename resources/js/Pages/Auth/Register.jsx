@@ -39,7 +39,7 @@ export default function Register() {
                                 autoComplete="name"
                                 autoFocus
                                 onChange={(e) => setData('name', e.target.value)}
-                                required
+                                // required
                             />
                         </div>
                         {errors.name && <div className="input-error">{errors.name}</div>}
@@ -55,7 +55,7 @@ export default function Register() {
                                 placeholder="Email"
                                 autoComplete="username"
                                 onChange={(e) => setData('email', e.target.value)}
-                                required
+                                // required
                             />
                         </div>
                         {errors.email && <div className="input-error">{errors.email}</div>}
@@ -71,7 +71,7 @@ export default function Register() {
                                 placeholder="Contraseña"
                                 autoComplete="new-password"
                                 onChange={(e) => setData('password', e.target.value)}
-                                required
+                                // required
                             />
                         </div>
                         {errors.password && <div className="input-error">{errors.password}</div>}
@@ -87,7 +87,7 @@ export default function Register() {
                                 placeholder="Confirmar Contraseña"
                                 autoComplete="new-password"
                                 onChange={(e) => setData('password_confirmation', e.target.value)}
-                                required
+                                // required
                             />
                         </div>
                         {errors.password_confirmation && <div className="input-error">{errors.password_confirmation}</div>}
